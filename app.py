@@ -67,44 +67,52 @@ if pressed:
         
     if images and selected_option:
         
-        #CONTAINER FOR NOTEE
+        try:
         
-        with st.container(border =True):
-            st.subheader('Your note')
+            #CONTAINER FOR NOTEE
             
-            with st.spinner('AI is writting note for you'):
+            with st.container(border =True):
+                st.subheader('Your note')
+                
+                with st.spinner('AI is writting note for you'):
+                    
+                    
+                    
+                    generated_notes = note_generator(pill_images)
+                    st.markdown(generated_notes)
+                    
+                 
                 
                 
+            #CONTAINER FOR AUDIO
+            
+            with st.container(border =True):
+                st.subheader('Audio Transcription')
                 
-                generated_notes = note_generator(pill_images)
-                st.markdown(generated_notes)
+                with st.spinner('AI is generating audio for you'):
+                    
+                    generated_notes = generated_notes.replace("#","")
+                    generated_notes = generated_notes.replace("*","")
+                    generated_notes = generated_notes.replace("-","")
+                    generated_notes = generated_notes.replace("_","")
+                    
+                    
+                    audio_transcript = audio_transcription(generated_notes)
+                    st.audio(audio_transcript)
                 
-             
+            #CONTAINER FOR QUIZ
             
-            
-        #CONTAINER FOR AUDIO
-        
-        with st.container(border =True):
-            st.subheader('Audio Transcription')
-            
-            with st.spinner('AI is generating audio for you'):
-                
-                generated_notes = generated_notes.replace("#","")
-                generated_notes = generated_notes.replace("*","")
-                generated_notes = generated_notes.replace("-","")
-                generated_notes = generated_notes.replace("_","")
+            with st.container(border =2):
+                st.subheader(f"Quiz{selected_option} Difficulty")
                 
                 
-                audio_transcript = audio_transcription(generated_notes)
-                st.audio(audio_transcript)
-            
-        #CONTAINER FOR QUIZ
-        
-        with st.container(border =2):
-            st.subheader(f"Quiz{selected_option} Difficulty")
-            
-            
-            with st.spinner("AI is generating quizzes for you"):
-                quizzes = quiz_generator(pill_images,selected_option)
-            
-                st.markdown(quizzes)
+                with st.spinner("AI is generating quizzes for you"):
+                    quizzes = quiz_generator(pill_images,selected_option)
+                
+                    st.markdown(quizzes)
+
+        except Exception as e:
+            if "429" in str(e):
+                st.warning('Daily limit reached. Please try again after 12 hours.')
+            else:
+                st.warning('Something went wrong. Please try again later.')
