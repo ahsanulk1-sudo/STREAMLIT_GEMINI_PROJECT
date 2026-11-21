@@ -1,4 +1,5 @@
 import  streamlit as st
+import re
 from api_calling import note_generator,audio_transcription,quiz_generator
 
 
@@ -113,6 +114,13 @@ if pressed:
 
         except Exception as e:
             if "429" in str(e):
-                st.warning('Daily limit reached. Please try again after 12 hours.')
+                found = re.search(r"retryDelay': '(\d+)s", str(e))
+                if found:
+                    total_seconds = int(found.group(1))
+                    hours = total_seconds // 3600
+                    minutes = (total_seconds % 3600) // 60
+                    st.warning(f'Daily limit reached. Please try again after {hours} hours {minutes} minutes.')
+                else:
+                    st.warning('Daily limit reached. Please try again later.')
             else:
                 st.warning('Something went wrong. Please try again later.')
