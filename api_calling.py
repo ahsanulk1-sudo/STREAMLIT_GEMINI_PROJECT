@@ -59,3 +59,4 @@ def quiz_generator(image,difficulty):
             model = "gemini-3-flash-preview",
             contents = [image, prompt]
         )    
+    return response.text
